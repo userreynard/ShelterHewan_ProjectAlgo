@@ -143,3 +143,63 @@ void loadAdopsi() {
     }
     fclose(f);
 }
+
+void sortHewan(Hewan *arr, int jml, int field, bool asc) {
+    for (int i = 0; i < jml - 1; i++) {
+        for (int j = i + 1; j < jml; j++) {
+            bool tukar = (field == 1)
+                ? (asc ? arr[i].nama > arr[j].nama : arr[i].nama < arr[j].nama)
+                : (asc ? arr[i].umur > arr[j].umur : arr[i].umur < arr[j].umur);
+            
+            if (tukar) {
+                Hewan temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+}
+
+void tampilHewan(Hewan arr[], int jml, string filter) {
+    if (jml == 0) { cout << "\nData hewan di shelter masih kosong.\n"; return; }
+    cout << "\n=== DAFTAR HEWAN PELIHARAAN ===\n";
+    if (filter != "") cout << "Filter spesies: " << filter << "\n";
+    cout << "+-----+----------------------+------------------+---------------+--------------+\n"
+         << "| No  | Nama                 | Spesies          | Ras           | Umur (Bulan) |\n"
+         << "+-----+----------------------+------------------+---------------+--------------+\n";
+
+    int no = 1, tampil = 0;
+    for (int i = 0; i < jml; i++) {
+        if (filter == "" || sama(arr[i].spesies, filter)) {
+            cout << "| " << setw(3) << left << no++ << " "
+                 << "| " << setw(21) << left << arr[i].nama
+                 << "| " << setw(17) << left << arr[i].spesies
+                 << "| " << setw(14) << left << arr[i].ras
+                 << "| " << setw(12) << right << arr[i].umur << " |\n";
+            tampil++;
+        }
+    }
+    cout << "+-----+----------------------+------------------+---------------+--------------+\n";
+    if (tampil == 0)
+        cout << "Tidak ada hewan dengan spesies '" << filter << "'.\n";
+}
+
+void tampilPengajuan() {
+    if (!headAdopsi) { cout << "\nDaftar pengajuan adopsi kosong.\n"; return; }
+
+    cout << "\n=== DAFTAR PENGAJUAN ADOPSI ===\n"
+         << "+-----+-----------------+-----------------+-----------------+-----------------+-----------------+----------------------+\n"
+         << "| No  | Adopter         | Hewan           | Spesies         | Ras             | Kontak          | Alamat               |\n"
+         << "+-----+-----------------+-----------------+-----------------+-----------------+-----------------+----------------------+\n";
+    int no = 1;
+    for (NodeAdopsi *t = headAdopsi; t; t = t->next) {
+        cout << "| " << setw(3) << left << no++ << " | "
+             << setw(15) << left << t->data.adopter << " | "
+             << setw(15) << left << t->data.hewan << " | "
+             << setw(15) << left << t->data.spesies << " | "
+             << setw(15) << left << t->data.ras << " | "
+             << setw(15) << left << t->data.kontak << " | "
+             << setw(20) << left << t->data.alamat << " |\n";
+    }
+    cout << "+-----+-----------------+-----------------+-----------------+-----------------+-----------------+----------------------+\n";
+}
