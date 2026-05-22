@@ -203,3 +203,65 @@ void tampilPengajuan() {
     }
     cout << "+-----+-----------------+-----------------+-----------------+-----------------+-----------------+----------------------+\n";
 }
+
+void menuLihatHewan(Hewan arr[], int jml) {
+    if (jml == 0) { cout << "Data hewan kosong.\n"; return; }
+    int pF, pS, pU;
+    string filter = "";
+    cout << "\n1. Tampilkan Semua\n2. Filter Spesies\nPilih: ";
+    cin >> pF; cin.ignore();
+    if (pF == 2) { 
+        cout << "\n=== DAFTAR SPESIES TERSEDIA ===\n";
+        cout << "+-----+----------------------+\n";
+        cout << "| No  | Nama Spesies         |\n";
+        cout << "+-----+----------------------+\n";
+        
+        int noSpesies = 1;
+        for (int i = 0; i < jml; i++) {
+            bool sudahAda = false;
+            for (int j = 0; j < i; j++) {
+                if (sama(arr[i].spesies, arr[j].spesies)) {
+                    sudahAda = true;
+                    break;
+                }
+            }
+            if (!sudahAda) {
+                cout << "| " << setw(3) << left << noSpesies++ << " | "
+                     << setw(20) << left << arr[i].spesies << " |\n";
+            }
+        }
+        cout << "+-----+----------------------+\n";
+        cout << "Ketik spesies yang ingin ditampilkan: "; 
+        getline(cin, filter); 
+    }
+    cout << "\n1. Sort Nama  2. Sort Umur\nPilih: ";
+    cin >> pS; cin.ignore();
+    cout << "1. Ascending  2. Descending\nPilih: ";
+    cin >> pU; cin.ignore();
+
+    sortHewan(arr, jml, pS, pU == 1);
+    tampilHewan(arr, jml, filter);
+}
+
+void cariHewan(Hewan arr[], int jml) {
+    tampilHewan(arr, jml, ""); 
+    if (jml == 0) return;
+    string nama, spesies, ras;
+    cout << "\n--- PENCARIAN HEWAN (SPESIFIK) ---\n";
+    cout << "Nama hewan yang dicari    : "; getline(cin, nama);
+    cout << "Spesies hewan yang dicari : "; getline(cin, spesies);
+    cout << "Ras hewan yang dicari     : "; getline(cin, ras);
+    bool ditemukan = false;
+    for (int i = 0; i < jml; i++) {
+        if (sama(arr[i].nama, nama) && sama(arr[i].spesies, spesies) && sama(arr[i].ras, ras)) {
+            cout << "\n=== Data Hewan Ditemukan ===\n"
+                 << "Nama    : " << arr[i].nama    << "\n"
+                 << "Spesies : " << arr[i].spesies << "\n"
+                 << "Ras     : " << arr[i].ras     << "\n"
+                 << "Umur    : " << arr[i].umur    << " bulan\n";
+            ditemukan = true;
+            break; 
+        }
+    }
+    if (!ditemukan) cout << "Hewan tidak ditemukan atau data tidak cocok.\n";
+}
