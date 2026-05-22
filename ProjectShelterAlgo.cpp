@@ -265,3 +265,115 @@ void cariHewan(Hewan arr[], int jml) {
     }
     if (!ditemukan) cout << "Hewan tidak ditemukan atau data tidak cocok.\n";
 }
+
+void tambahHewan(Hewan arr[], int &jml) {
+    tampilHewan(arr, jml, ""); 
+    int n;
+    cout << "\n--- TAMBAH DATA HEWAN ---\n";
+    cout << "Jumlah hewan yang ditambahkan: ";
+    cin >> n; cin.ignore();
+    for (int i = 0; i < n; i++) {
+        Hewan h;
+        cout << "\nData hewan ke-" << jml + 1 << "\n";
+        cout << "Nama    : "; getline(cin, h.nama);
+        cout << "Spesies : "; getline(cin, h.spesies);
+        cout << "Ras     : "; getline(cin, h.ras);
+        
+        bool isDuplicate = false;
+        for (NodeHewan *c = headHewan; c; c = c->next) {
+            if (sama(c->data.nama, h.nama) && 
+                sama(c->data.spesies, h.spesies) && 
+                sama(c->data.ras, h.ras)) {
+                isDuplicate = true;
+                break;
+            }
+        }
+        if (isDuplicate) {
+            cout << "-> ERROR: Hewan dengan Nama, Spesies, dan Ras tersebut sudah terdaftar di shelter!\n";
+            cout << "-> Silakan masukkan data hewan yang berbeda.\n";
+            i--; 
+            continue; 
+        }
+        cout << "Umur    : "; cin >> h.umur; cin.ignore();
+        
+        arr[jml++] = h;
+        dllTambah(h);
+    }
+    cout << "Hewan berhasil ditambahkan!\n";
+}
+
+void editHewan(Hewan arr[], int jml) {
+    tampilHewan(arr, jml, ""); 
+    if (jml == 0) return;
+
+    string namaLama, spesiesLama, rasLama;
+    cout << "\n--- EDIT DATA HEWAN ---\n";
+    cout << "Ketik nama hewan yang ingin diedit    : "; getline(cin, namaLama);
+    cout << "Ketik spesies hewan yang ingin diedit : "; getline(cin, spesiesLama);
+    cout << "Ketik ras hewan yang ingin diedit     : "; getline(cin, rasLama);
+    
+    NodeHewan *n = nullptr;
+    for (NodeHewan *c = headHewan; c; c = c->next) {
+        if (sama(c->data.nama, namaLama) && sama(c->data.spesies, spesiesLama) && sama(c->data.ras, rasLama)) {
+            n = c;
+            break;
+        }
+    }
+
+    if (!n) { cout << "Hewan dengan kombinasi data tersebut tidak ditemukan.\n"; return; }
+    cout << "\nData saat ini -> Nama: " << n->data.nama
+         << " | Spesies: " << n->data.spesies
+         << " | Ras: " << n->data.ras
+         << " | Umur: " << n->data.umur << " bulan\n";
+    string namaBaru, spesiesBaru, rasBaru;
+    int umurBaru;
+    cout << "\nNama baru    : "; getline(cin, namaBaru);
+    cout << "Spesies baru : "; getline(cin, spesiesBaru);
+    cout << "Ras baru     : "; getline(cin, rasBaru);
+    
+    bool isDuplicate = false;
+    for (NodeHewan *c = headHewan; c; c = c->next) {
+        if (c != n && 
+            sama(c->data.nama, namaBaru) && 
+            sama(c->data.spesies, spesiesBaru) && 
+            sama(c->data.ras, rasBaru)) {
+            isDuplicate = true;
+            break;
+        }
+    }
+    if (isDuplicate) {
+        cout << "-> ERROR: Gagal mengubah. Kombinasi Nama, Spesies, dan Ras tersebut sudah dimiliki hewan lain!\n";
+        return; 
+    }
+    cout << "Umur baru    : "; cin >> umurBaru; cin.ignore();
+    n->data.nama = namaBaru;
+    n->data.spesies = spesiesBaru;
+    n->data.ras = rasBaru;
+    n->data.umur = umurBaru;
+    
+    cout << "Data hewan berhasil diupdate!\n";
+}
+
+void hapusHewan(Hewan arr[], int jml) {
+    tampilHewan(arr, jml, ""); 
+    if (jml == 0) return;
+    string nama, spesies, ras;
+    cout << "\n--- HAPUS DATA HEWAN ---\n";
+    cout << "Ketik nama hewan yang ingin dihapus    : "; getline(cin, nama);
+    cout << "Ketik spesies hewan yang ingin dihapus : "; getline(cin, spesies);
+    cout << "Ketik ras hewan yang ingin dihapus     : "; getline(cin, ras);
+
+    NodeHewan *target = nullptr;
+    for (NodeHewan *c = headHewan; c; c = c->next) {
+        if (sama(c->data.nama, nama) && sama(c->data.spesies, spesies) && sama(c->data.ras, ras)) {
+            target = c;
+            break;
+        }
+    }
+    if (!target) { 
+        cout << "Hewan dengan kombinasi data tersebut tidak ditemukan di shelter.\n"; 
+        return; 
+    }
+    dllHapus(target);
+    cout << "Hewan berhasil dihapus dari sistem!\n";
+}
