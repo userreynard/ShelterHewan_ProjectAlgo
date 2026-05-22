@@ -115,3 +115,31 @@ void loadHewan(Hewan arr[], int &jml) {
     }
     fclose(f);
 }
+
+void simpanAdopsi() {
+    FILE *f = fopen("adopsi.txt", "w");
+    if (!f) return;
+    for (NodeAdopsi *t = headAdopsi; t; t = t->next)
+        fprintf(f, "%s;%s;%s;%s;%s;%s\n",
+            t->data.adopter.c_str(), t->data.hewan.c_str(),
+            t->data.spesies.c_str(), t->data.ras.c_str(),
+            t->data.kontak.c_str(),  t->data.alamat.c_str());
+    fclose(f);
+}
+
+void loadAdopsi() {
+    FILE *f = fopen("adopsi.txt", "r");
+    if (!f) return;
+    char line[300];
+    while (fgets(line, sizeof(line), f)) {
+        char a[100], b[100], c[100], d[100], e[100], g[100];
+        if (sscanf(line, "%99[^;];%99[^;];%99[^;];%99[^;];%99[^;];%99[^\n]",
+                   a, b, c, d, e, g) == 6) {
+            Adopsi ad;
+            ad.adopter = a; ad.hewan   = b; ad.spesies = c;
+            ad.ras     = d; ad.kontak  = e; ad.alamat  = g;
+            sllTambahAdopsi(ad);
+        }
+    }
+    fclose(f);
+}
