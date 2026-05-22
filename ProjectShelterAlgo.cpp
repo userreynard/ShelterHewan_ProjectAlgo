@@ -22,3 +22,16 @@ struct NodeAdopsi {
     NodeAdopsi *next;
 };
 NodeAdopsi *headAdopsi = nullptr;
+
+string toLower(string s) {
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (s[i] >= 'A' && s[i] <= 'Z') {
+            s[i] += 32;
+        }
+    }
+    return s;
+}
+
+bool sama(string a, string b) {
+    return toLower(a) == toLower(b);
+}
