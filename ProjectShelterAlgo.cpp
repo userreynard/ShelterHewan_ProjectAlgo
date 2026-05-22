@@ -84,3 +84,34 @@ void sllHapusAdopsi(NodeAdopsi *cur, NodeAdopsi *prev) {
     else      headAdopsi = cur->next;
     delete cur;
 }
+
+void sinkron(Hewan *arr, int &jml) {
+    jml = 0;
+    for (NodeHewan *c = headHewan; c && jml < 50; c = c->next)
+        arr[jml++] = c->data;
+}
+
+void simpanHewan(Hewan arr[], int jml) {
+    FILE *f = fopen("hewan.txt", "w");
+    if (!f) return;
+    for (int i = 0; i < jml; i++)
+        fprintf(f, "%s;%s;%s;%d\n",
+            arr[i].nama.c_str(), arr[i].spesies.c_str(),
+            arr[i].ras.c_str(),  arr[i].umur);
+    fclose(f);
+}
+
+void loadHewan(Hewan arr[], int &jml) {
+    FILE *f = fopen("hewan.txt", "r");
+    if (!f) return;
+    char a[100], b[100], c[100];
+    int u;
+    while (fscanf(f, "%99[^;];%99[^;];%99[^;];%d\n", a, b, c, &u) == 4 && jml < 50) {
+        arr[jml].nama    = a;
+        arr[jml].spesies = b;
+        arr[jml].ras     = c;
+        arr[jml].umur    = u;
+        dllTambah(arr[jml++]);
+    }
+    fclose(f);
+}
