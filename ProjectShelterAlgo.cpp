@@ -447,3 +447,78 @@ void batalUser() {
     }
     cout << "Data pengajuan tidak ditemukan.\n";
 }
+
+void batalAdmin() {
+    tampilPengajuan();
+    if (!headAdopsi) return;
+    int no;
+    cout << "\nNomor pengajuan yang ingin ditolak/dihapus: "; cin >> no; cin.ignore();
+    
+    if (no < 1) {
+        cout << "Nomor pengajuan tidak valid. Harus dimulai dari 1.\n";
+        return;
+    }
+    NodeAdopsi *c = headAdopsi, *p = nullptr;
+    int pos = 1;
+    while (c && pos < no) { p = c; c = c->next; pos++; }
+    
+    if (!c) { cout << "Nomor pengajuan tidak valid.\n"; return; }
+    
+    cout << "Pengajuan atas nama '" << c->data.adopter << "' telah dihapus.\n";
+    sllHapusAdopsi(c, p);
+}
+
+void setujuiAdopsi(Hewan arr[], int &jml) {
+    tampilPengajuan();
+    if (!headAdopsi) return;
+    int no;
+    cout << "\nNomor pengajuan yang ingin disetujui: "; cin >> no; cin.ignore();
+
+    if (no < 1) {
+        cout << "Nomor pengajuan tidak valid. Harus dimulai dari 1.\n";
+        return;
+    }
+    NodeAdopsi *target = headAdopsi;
+    int pos = 1;
+    while (target && pos < no) { 
+        target = target->next; 
+        pos++; 
+    }
+    
+    if (!target) { cout << "Nomor pengajuan tidak valid.\n"; return; }
+    string namaHewan = target->data.hewan;
+    string spesiesHewan = target->data.spesies;
+    string rasHewan = target->data.ras;
+    string namaAdopter = target->data.adopter;
+    cout << "Adopsi disetujui! Hewan '" << namaHewan << "' telah diadopsi oleh '" << namaAdopter << "'.\n";
+    
+    // Hapus dari data hewan
+    NodeHewan *nh = headHewan;
+    while (nh) {
+        if (sama(nh->data.nama, namaHewan) && sama(nh->data.spesies, spesiesHewan) && sama(nh->data.ras, rasHewan)) {
+            NodeHewan *tmp = nh; 
+            nh = nh->next;
+            dllHapus(tmp);
+            cout << ">> Hewan otomatis dihapus dari daftar shelter.\n";
+            break;
+        } else {
+            nh = nh->next;
+        }
+    }
+    
+    // Hapus dari antrean pengajuan
+    int count = 0;
+    NodeAdopsi *c = headAdopsi, *p = nullptr;
+    while (c) {
+        if (sama(c->data.hewan, namaHewan) && sama(c->data.spesies, spesiesHewan) && sama(c->data.ras, rasHewan)) {
+            NodeAdopsi *tmp = c; 
+            c = c->next;
+            sllHapusAdopsi(tmp, p); 
+            count++;
+        } else { 
+            p = c; 
+            c = c->next; 
+        }
+    }
+    cout << ">> " << count << " riwayat pengajuan (termasuk yang disetujui) telah dibersihkan dari daftar.\n";
+}
