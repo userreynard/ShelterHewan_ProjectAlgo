@@ -17,6 +17,7 @@ struct Adopsi {
     string adopter, hewan, spesies, ras, kontak, alamat;
 };
 
+
 struct NodeAdopsi {
     Adopsi data;
     NodeAdopsi *next;
@@ -35,6 +36,7 @@ string toLower(string s) {
 bool sama(string a, string b) {
     return toLower(a) == toLower(b);
 }
+
 void dllTambah(Hewan h) {
     NodeHewan *n = new NodeHewan;
     n->data = h;
@@ -201,6 +203,7 @@ void tampilPengajuan() {
              << setw(15) << left << t->data.kontak << " | "
              << setw(20) << left << t->data.alamat << " |\n";
     }
+
     cout << "+-----+-----------------+-----------------+-----------------+-----------------+-----------------+----------------------+\n";
 }
 
@@ -374,7 +377,7 @@ void hapusHewan(Hewan arr[], int jml) {
         cout << "Hewan dengan kombinasi data tersebut tidak ditemukan di shelter.\n"; 
         return; 
     }
-    dllHapus(target);
+    dllHapus(target); // double linked list
     cout << "Hewan berhasil dihapus dari sistem!\n";
 }
 
@@ -417,7 +420,7 @@ void ajukanAdopsi(Hewan arr[], int jml) {
     }
     cout << "Nomor Kontak          : "; getline(cin, a.kontak);
     cout << "Alamat Lengkap        : "; getline(cin, a.alamat);
-    sllTambahAdopsi(a);
+    sllTambahAdopsi(a); // single linked list
     cout << "Pengajuan adopsi atas nama '" << a.adopter << "' berhasil didaftarkan!\n";
 }
 
@@ -491,8 +494,6 @@ void setujuiAdopsi(Hewan arr[], int &jml) {
     string rasHewan = target->data.ras;
     string namaAdopter = target->data.adopter;
     cout << "Adopsi disetujui! Hewan '" << namaHewan << "' telah diadopsi oleh '" << namaAdopter << "'.\n";
-    
-    // Hapus dari data hewan
     NodeHewan *nh = headHewan;
     while (nh) {
         if (sama(nh->data.nama, namaHewan) && sama(nh->data.spesies, spesiesHewan) && sama(nh->data.ras, rasHewan)) {
@@ -505,8 +506,6 @@ void setujuiAdopsi(Hewan arr[], int &jml) {
             nh = nh->next;
         }
     }
-    
-    // Hapus dari antrean pengajuan
     int count = 0;
     NodeAdopsi *c = headAdopsi, *p = nullptr;
     while (c) {
@@ -521,4 +520,105 @@ void setujuiAdopsi(Hewan arr[], int &jml) {
         }
     }
     cout << ">> " << count << " riwayat pengajuan (termasuk yang disetujui) telah dibersihkan dari daftar.\n";
+}
+
+void menuUser(Hewan arr[], int jml) {
+    int p;
+    do {
+        cout << "\n=== MENU ADOPTER HappyPaws ===\n"
+             << "1. Lihat Daftar Hewan\n"
+             << "2. Ajukan Adopsi\n"
+             << "3. Lihat Daftar Pengajuan Anda\n"
+             << "4. Batalkan Pengajuan\n"
+             << "5. Kembali ke Menu Utama\n"
+             << "Pilih: ";
+        cin >> p; cin.ignore();
+        if      (p == 1) menuLihatHewan(arr, jml);
+        else if (p == 2) { ajukanAdopsi(arr, jml); simpanAdopsi(); }
+        else if (p == 3) tampilPengajuan();
+        else if (p == 4) { batalUser(); simpanAdopsi(); }
+        else if (p == 5) return;
+        else cout << "Pilihan tidak valid.\n";
+    } while (true);
+}
+
+void menuAdmin(Hewan arr[], int &jml) {
+    int p;
+    do {
+        cout << "\n=== MENU ADMIN HappyPaws ===\n"
+             << "1. Lihat Data Hewan \n"
+             << "2. Cari Hewan \n"
+             << "3. Tambah Data Hewan\n"
+             << "4. Edit Data Hewan\n"
+             << "5. Hapus Data Hewan\n"
+             << "6. Lihat Daftar Pengajuan Adopsi\n"
+             << "7. Setujui Adopsi \n"
+             << "8. Tolak / Hapus Pengajuan \n"
+             << "9. Kembali ke Menu Utama\n"
+             << "Pilih: ";
+        cin >> p; cin.ignore();
+
+        switch (p) {
+            case 1: menuLihatHewan(arr, jml); break;
+            case 2: cariHewan(arr, jml); break;
+            case 3: 
+                tambahHewan(arr, jml); 
+                sinkron(arr, jml); simpanHewan(arr, jml); 
+                break;
+            case 4: 
+                editHewan(arr, jml); 
+                sinkron(arr, jml); simpanHewan(arr, jml); 
+                break;
+            case 5: 
+                hapusHewan(arr, jml); 
+                sinkron(arr, jml); simpanHewan(arr, jml); 
+                break;
+            case 6: tampilPengajuan(); break;
+            case 7: 
+                setujuiAdopsi(arr, jml); 
+                sinkron(arr, jml); simpanHewan(arr, jml); simpanAdopsi(); 
+                break;
+            case 8: batalAdmin(); simpanAdopsi(); break;
+            case 9: return;
+            default: cout << "Pilihan tidak valid.\n";
+        }
+    } while (true);
+}
+
+int main() {
+    Hewan arr[50];
+    int jml = 0;
+    loadHewan(arr, jml);
+    loadAdopsi();
+    int p;
+    string u, pw, kb;
+    do {
+        cout << "\n=== SISTEM ADOPSI HappyPaws ===\n"
+             << "1. Admin Shelter\n"
+             << "2. Adopter (Guest)\n"
+             << "3. Keluar Aplikasi\n"
+             << "Pilih: ";
+        cin >> p; cin.ignore();
+        if (p == 1) {
+            do {
+                cout << "Username: "; getline(cin, u);
+                cout << "Password: "; getline(cin, pw);
+                if (u == "admin" && pw == "12345") {
+                    cout << "Login berhasil!\n"; break;
+                }
+                cout << "Username/Password salah. Coba lagi.\n";
+            } while (true);
+            menuAdmin(arr, jml);
+        } else if (p == 2) {
+            menuUser(arr, jml);
+        } else if (p == 3) {
+            break;
+        } else {
+            cout << "Pilihan tidak valid.\n";
+        }
+        cout << "Kembali ke menu utama? (Y/N): ";
+        getline(cin, kb);
+    } while (kb == "Y" || kb == "y");
+    cout << "Terima kasih telah menggunakan layanan HappyPaws!\n";
+    return 0;
 }
