@@ -377,3 +377,73 @@ void hapusHewan(Hewan arr[], int jml) {
     dllHapus(target);
     cout << "Hewan berhasil dihapus dari sistem!\n";
 }
+
+void ajukanAdopsi(Hewan arr[], int jml) {
+    tampilHewan(arr, jml, ""); 
+    if (jml == 0) return;
+
+    cout << "\n--- FORM PENGAJUAN ADOPSI ---\n";
+    string nama, spesies, ras;
+    cout << "Ketik nama hewan yang ingin diadopsi    : "; getline(cin, nama);
+    cout << "Ketik spesies hewan yang ingin diadopsi : "; getline(cin, spesies);
+    cout << "Ketik ras hewan yang ingin diadopsi     : "; getline(cin, ras);
+    int idx = -1;
+    for (int i = 0; i < jml; i++) {
+        if (sama(arr[i].nama, nama) && sama(arr[i].spesies, spesies) && sama(arr[i].ras, ras)) { 
+            idx = i; 
+            break; 
+        }
+    }
+    if (idx == -1) { cout << "Hewan dengan kombinasi data tersebut tidak ditemukan di shelter.\n"; return; }
+
+    Adopsi a;
+    a.hewan   = arr[idx].nama;
+    a.spesies = arr[idx].spesies;
+    a.ras     = arr[idx].ras;
+    cout << "Ketik Nama pengadopsi : "; getline(cin, a.adopter);
+  
+    bool sudahMengajukan = false;
+    for (NodeAdopsi *c = headAdopsi; c != nullptr; c = c->next) {
+        if (sama(c->data.adopter, a.adopter)) {
+            sudahMengajukan = true;
+            break;
+        }
+    }
+
+    if (sudahMengajukan) {
+        cout << "-> ERROR: Pengadopsi atas nama '" << a.adopter << "' sudah memiliki pengajuan aktif!\n";
+        cout << "-> Satu orang hanya diperbolehkan mengajukan satu adopsi pada satu waktu.\n";
+        return; 
+    }
+    cout << "Nomor Kontak          : "; getline(cin, a.kontak);
+    cout << "Alamat Lengkap        : "; getline(cin, a.alamat);
+    sllTambahAdopsi(a);
+    cout << "Pengajuan adopsi atas nama '" << a.adopter << "' berhasil didaftarkan!\n";
+}
+
+void batalUser() {
+    tampilPengajuan();
+    if (!headAdopsi) return;
+
+    cout << "\n--- BATALKAN PENGAJUAN ---\n";
+    string adopter, hewan, spesies, ras;
+    cout << "Ketik Nama pengadopsi : "; getline(cin, adopter);
+    cout << "Ketik Nama hewan      : "; getline(cin, hewan);
+    cout << "Ketik Spesies hewan   : "; getline(cin, spesies);
+    cout << "Ketik Ras hewan       : "; getline(cin, ras);
+
+    NodeAdopsi *c = headAdopsi, *p = nullptr;
+    while (c) {
+        if (sama(c->data.adopter, adopter) && 
+            sama(c->data.hewan, hewan) && 
+            sama(c->data.spesies, spesies) && 
+            sama(c->data.ras, ras)) {
+            
+            sllHapusAdopsi(c, p);
+            cout << "Pengajuan berhasil dibatalkan!\n";
+            return;
+        }
+        p = c; c = c->next;
+    }
+    cout << "Data pengajuan tidak ditemukan.\n";
+}
