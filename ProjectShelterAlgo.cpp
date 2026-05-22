@@ -62,3 +62,25 @@ NodeHewan *dllCari(string nama) {
         if (sama(c->data.nama, nama)) return c;
     return nullptr;
 }
+
+void sllTambahAdopsi(Adopsi a) {
+    NodeAdopsi *n = new NodeAdopsi;
+    n->data = a;
+    n->next = nullptr;
+    
+    if (!headAdopsi) {
+        headAdopsi = n;
+    } else {
+        NodeAdopsi *temp = headAdopsi;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = n;
+    }
+}
+
+void sllHapusAdopsi(NodeAdopsi *cur, NodeAdopsi *prev) {
+    if (prev) prev->next = cur->next;
+    else      headAdopsi = cur->next;
+    delete cur;
+}
